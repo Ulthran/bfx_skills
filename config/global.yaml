@@ -1,0 +1,111 @@
+# =============================================================================
+# BFX Skills — Global Configuration
+# =============================================================================
+# This file is the single source of truth for environment-specific settings.
+# Tool defaults (threads, params) live in config/tools/*.yaml.
+# Override any field in a project's workflow/config.yaml.
+
+# -----------------------------------------------------------------------------
+# Paths
+# -----------------------------------------------------------------------------
+paths:
+  # Root directory where all projects are created
+  projects_root: ~/projects
+
+  # Reference genome database root
+  # Expected layout: {genome_db}/{organism}/{build}/{build}.fa[.gz]
+  # Example: /ref/genomes/human/hg38/hg38.fa.gz
+  genome_db: /ref/genomes
+
+  # Conda/mamba environments cache (leave null to use default ~/.conda)
+  conda_envs: null
+
+  # Scratch space for temp files during heavy jobs (null = system /tmp)
+  scratch: null
+
+# -----------------------------------------------------------------------------
+# Reference genomes (paths relative to genome_db, or absolute)
+# Used for decontamination, mapping, etc.
+# -----------------------------------------------------------------------------
+genomes:
+  human:
+    build: hg38
+    fasta: human/hg38/hg38.fa.gz
+    bwa_index: human/hg38/bwa/hg38
+    bowtie2_index: human/hg38/bowtie2/hg38
+
+  phix:
+    build: phiX174
+    fasta: phix/phiX174.fa
+    bwa_index: phix/bwa/phiX174
+    bowtie2_index: phix/bowtie2/phiX174
+
+  mouse:
+    build: mm39
+    fasta: mouse/mm39/mm39.fa.gz
+    bwa_index: mouse/mm39/bwa/mm39
+    bowtie2_index: mouse/mm39/bowtie2/mm39
+
+# -----------------------------------------------------------------------------
+# Default tool selections per pipeline stage
+# Must match a filename in config/tools/ (without .yaml)
+# -----------------------------------------------------------------------------
+default_tools:
+  qc: fastp
+  decontam: bwa
+  taxonomy_profiling: kraken2
+  functional_profiling: humann3
+  assembly: megahit
+  binning: metabat2
+
+# -----------------------------------------------------------------------------
+# Environment manager
+# Options: conda, mamba, micromamba, docker, system
+# conda/mamba/micromamba: uses envs/*.yaml specs
+# docker: uses docker_image field from tool profile
+# system: assumes tools are on PATH (no env management)
+# -----------------------------------------------------------------------------
+env_manager: mamba
+
+# -----------------------------------------------------------------------------
+# Execution
+# -----------------------------------------------------------------------------
+execution:
+  # Default backend: local or slurm
+  default_backend: local
+
+  # Local execution settings
+  local:
+    cores: 8
+    max_memory_gb: 32
+
+  # SLURM settings (used when backend=slurm)
+  slurm:
+    account: null            # SLURM account/partition (null = cluster default)
+    partition: null
+    default_mem_mb: 16000
+    default_time: "24:00:00"
+    max_jobs: 50
+    # Path to snakemake SLURM profile (relative to bfx_skills root or absolute)
+    profile: templates/profiles/slurm
+
+# -----------------------------------------------------------------------------
+# Snakemake settings
+# -----------------------------------------------------------------------------
+snakemake:
+  latency_wait: 60           # seconds to wait for output files after job completes
+  restart_times: 1           # auto-retry failed jobs N times
+  keep_going: false          # continue other jobs if one fails
+  printshellcmds: true       # print shell commands to log
+
+# -----------------------------------------------------------------------------
+# Monitoring
+# watch_job.py polling interval in seconds
+# -----------------------------------------------------------------------------
+monitor:
+  poll_interval: 60
+
+# -----------------------------------------------------------------------------
+# BFX Skills library path (set automatically; override if needed)
+# -----------------------------------------------------------------------------
+bfx_skills_root: ~/Penn/bfx_skills

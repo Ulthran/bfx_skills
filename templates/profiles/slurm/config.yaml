@@ -1,0 +1,25 @@
+# Snakemake SLURM execution profile
+# Requires snakemake-executor-plugin-slurm:
+#   mamba install -c conda-forge snakemake-executor-plugin-slurm
+executor: slurm
+use-conda: true
+conda-frontend: mamba
+latency-wait: 60
+printshellcmds: true
+rerun-incomplete: true
+keep-going: false
+jobs: 50                         # max concurrent SLURM jobs
+
+# Default SLURM resource requests (overridden by rule-level resources: block)
+default-resources:
+  slurm_account: null            # filled from global.yaml at DAG build time
+  slurm_partition: null
+  mem_mb: 16000
+  runtime: 1440                  # minutes (24h default)
+  cpus_per_task: 1
+
+# SLURM log paths (relative to project root, set at DAG build time)
+cluster-logpath: logs/slurm
+
+# Retries on job failure
+retries: 1

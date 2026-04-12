@@ -1,0 +1,56 @@
+# =============================================================================
+# Tool Profile: bwa (mem2)
+# Stage: decontam
+# Used for host/contaminant removal by mapping reads to reference genome(s)
+# and extracting unmapped pairs.
+# =============================================================================
+name: bwa
+stage: decontam
+version: "2.2.1"           # bwa-mem2
+
+conda_env: envs/bwa.yaml
+docker_image: staphb/bwa-mem2:2.2.1
+
+activation: null
+
+rule_template: decontam/bwa_decontam.smk
+
+# Two-pass command: map → extract unmapped
+# The rule template handles piping; this documents the logical steps.
+# {params.reference} is resolved from global.yaml genomes section.
+command_template: >
+  bwa-mem2 mem
+  -t {threads}
+  {params.reference}
+  {input.r1} {input.r2}
+  | samtools view -bS -
+  | samtools sort -n -
+  | samtools fastq -f 12 -F 256
+    -1 {output.r1} -2 {output.r2}
+    -s {output.singleton}
+    -
+
+default_params:
+  threads: 16
+  extra_bwa: ""
+  # Reference key from global.yaml genomes — resolved at DAG build time
+  # e.g., "human" → genome_db/human/hg38/bwa/hg38
+  # Multiple refs are mapped sequentially; reads failing all are kept.
+  decontam_refs:
+    - human
+    - phix
+
+resources:
+  mem_mb: 32000
+  runtime_min: 240
+  cpus: 16
+
+outputs:
+  - r1: "{sample}_R1_decontam.fastq.gz"
+  - r2: "{sample}_R2_decontam.fastq.gz"
+  - singleton: "{sample}_singleton_decontam.fastq.gz"
+  - flagstat: "{sample}_decontam.flagstat"
+
+qc_thresholds:
+  max_host_fraction: 0.50       # warn if >50% reads map to host (unusual for gut)
+  min_remaining_reads: 100000   # fail if fewer than 100k reads survive decontam
