@@ -32,101 +32,101 @@ long-running bioinformatics workflows.
 
 ---
 
+## First-Time Setup
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/yourorg/bfx_skills ~/Penn/bfx_skills
+
+# 2. Create your local config (gitignored)
+cp config/global.yaml.template config/global.yaml
+# Edit config/global.yaml: set genome_db, projects_root, bfx_skills_root
+
+# 3. Verify mamba/conda is available
+which mamba || which conda
+```
+
+---
+
 ## Library Layout
 
 ```
 bfx_skills/
-├── CLAUDE.md                    ← you are here
+├── CLAUDE.md                      ← you are here
 ├── config/
-│   ├── global.yaml              ← paths, cluster config, default tools
-│   └── tools/                   ← per-tool profiles (conda env, docker, command template)
-├── envs/                        ← conda environment specs
+│   ├── global.yaml.template       ← committed; copy → global.yaml and fill in paths
+│   ├── global.yaml                ← gitignored; your local environment settings
+│   ├── tools/                     ← per-tool profiles (conda env, docker, command template)
+│   └── citations.yaml             ← citation database for cite-bfx
+├── envs/                          ← conda environment specs
 ├── templates/
-│   ├── rules/                   ← snakemake rule templates by stage
-│   └── profiles/local|slurm/   ← execution profiles
-├── skills/                      ← skill protocols (read these before acting)
-│   ├── bfx-config.md
-│   ├── bfx-dag.md
-│   ├── bfx-run.md
-│   ├── bfx-monitor.md
-│   └── bfx-analyze.md
+│   ├── rules/                     ← snakemake rule templates by stage
+│   └── profiles/local|slurm/     ← execution profiles
+├── skills/                        ← skill protocols (read before acting)
+│   ├── User-facing (invoke these):
+│   │   ├── init-bfx.md            ← initialize project, assess data
+│   │   ├── plan-bfx.md            ← plan/re-plan analysis (enters plan mode)
+│   │   ├── prep-bfx.md            ← build Snakefile, validate, dry-run
+│   │   ├── do-bfx.md              ← execute workflow, monitor
+│   │   ├── hypothesize-bfx.md     ← literature survey → ranked hypothesis list
+│   │   └── cite-bfx.md            ← generate citation sheet
+│   └── Internal (called by user-facing skills):
+│       ├── bfx-config.md          ← load/validate global config
+│       ├── bfx-dag.md             ← assemble Snakefile from templates
+│       ├── bfx-run.md             ← launch Snakemake + watcher
+│       ├── bfx-monitor.md         ← parse state.yaml and logs
+│       └── bfx-analyze.md         ← interpret tool outputs, flag issues
 └── scripts/
-    └── watch_job.py             ← background job watcher daemon
+    ├── watch_job.py               ← background job watcher daemon
+    └── assess_data.py             ← FASTQ scanner for init-bfx
 ```
 
 ---
 
 ## Master Workflow Protocol
 
-When a user asks you to run a bioinformatics analysis, follow this sequence:
+The core loop is: **init → plan → prep → do → plan → prep → do → ...**
+`hypothesize-bfx` can be injected at any point to inform planning with literature.
 
-### Phase 1 — Understand the request
+```
+init-bfx        Create project dir, assess raw data, generate samples.tsv
+    │
+    ▼
+plan-bfx ◄──────────────────────────────────────────────────────┐
+    │     Understand goals / analyze completed stage / next steps │
+    ▼                                                             │
+prep-bfx        Validate paths/tools, build Snakefile, dry-run   │
+    │                                                             │
+    ▼                                                             │
+do-bfx          Execute workflow, launch watcher, monitor ────────┘
+    │
+    └──► cite-bfx  (when project is done)
 
-Before touching any files, clarify:
-- What is the data? (sample type, sequencing platform, paired-end?, approximate size)
-- What is the goal? (QC only? taxonomy? assembly? all of the above?)
-- What host(s) need to be removed? (human, mouse, other?)
-- Where is the data? (paths to raw FASTQ files)
-- Local or SLURM? (if unsure, default to local with SLURM as option)
+hypothesize-bfx  (run any time after init; output feeds back into plan-bfx)
+```
 
-Do NOT proceed without knowing where the raw data is.
+### Starting a new project
 
-### Phase 2 — Load config (bfx-config)
+When the user wants to run a bioinformatics analysis:
 
-Read `skills/bfx-config.md` and follow its protocol:
-1. Load `config/global.yaml`
-2. Resolve all paths
-3. Validate genome indices for requested decontam refs
-4. Load tool profiles for each requested stage
+1. **Do NOT proceed without knowing where the raw data is.** Ask first.
+2. Run `init-bfx` — creates the project directory and assesses the data.
+3. Run `plan-bfx` — enter plan mode; gather goals; produce a confirmed stage list.
+4. Run `prep-bfx` — build and validate the workflow; dry-run must pass.
+5. Run `do-bfx` — execute; launch background watcher; report PIDs.
+6. When a stage completes, run `plan-bfx` again to analyze and plan next steps.
+7. Optionally run `hypothesize-bfx` at any point to survey the literature and generate
+   a ranked list of questions worth exploring in the dataset.
+8. At project end, run `cite-bfx` to produce the citation sheet.
 
-If any required genome index is missing, STOP and tell the user exactly what
-needs to be built/downloaded before continuing.
+### Returning to an existing project
 
-### Phase 3 — Build the DAG (bfx-dag)
-
-Read `skills/bfx-dag.md` and follow its protocol:
-1. Create project directory at `{projects_root}/{project_name}/`
-2. Write `project.yaml`, `workflow/config.yaml`, `samples.tsv`
-3. Assemble `workflow/Snakefile` from templates
-4. Symlink conda envs
-
-Show the user the planned project structure before proceeding.
-
-### Phase 4 — Dry-run (bfx-run, dry-run mode)
-
-Read `skills/bfx-run.md` and run a dry-run.
-
-Report:
-- Total jobs, breakdown by rule
-- First sample's resolved input/output paths (sanity check)
-- Estimated wall time
-
-**Wait for explicit user approval before proceeding to execution.**
-
-### Phase 5 — Execute (bfx-run, execute mode)
-
-After user approval:
-1. Initialize `workflow/state.yaml`
-2. Launch Snakemake in background (`nohup ... &`)
-3. Launch `watch_job.py` in background
-4. Confirm PIDs and log path to user
-
-### Phase 6 — Monitor (bfx-monitor)
-
-When the user asks for a status update (or when you return to a session):
-1. Read `skills/bfx-monitor.md`
-2. Read `workflow/state.yaml`
-3. Report status, progress, any errors
-4. Check if watcher is still alive; restart if dead
-
-### Phase 7 — Analyze results (bfx-analyze)
-
-After a stage completes:
-1. Read `skills/bfx-analyze.md`
-2. Parse tool-specific outputs (fastp JSON, flagstat, etc.)
-3. Apply QC thresholds from tool profile
-4. Report cohort summary with flagged samples
-5. Recommend next steps
+When the user references a project by name:
+1. Read `{projects_root}/{project_name}/project.yaml` to orient yourself.
+2. Read `{projects_root}/{project_name}/workflow/state.yaml` if it exists.
+3. If `status: running` → check on the job (do-bfx monitoring protocol).
+4. If `status: complete` → run plan-bfx to analyze and propose next steps.
+5. If `status: failed` → diagnose and offer recovery via do-bfx `--rerun-incomplete`.
 
 ---
 
@@ -180,6 +180,18 @@ pattern of existing templates, then add a tool profile in `config/tools/`.
 
 ---
 
+## Project State at a Glance
+
+```bash
+# Quick status of all projects
+for f in $(projects_root)/*/workflow/state.yaml; do
+  echo "---"
+  grep -E "^(project|status|started|ended)" "$f"
+done
+```
+
+---
+
 ## Adding New Tools
 
 To add a new tool to the library:
@@ -209,14 +221,3 @@ Pre-build all envs before a SLURM run with:
 snakemake --use-conda --conda-create-envs-only --cores 1
 ```
 
----
-
-## Project State at a Glance
-
-To see all projects and their current status:
-```bash
-for f in {projects_root}/*/workflow/state.yaml; do
-  echo "---"
-  grep -E "^(project|status|started|ended|progress)" "$f"
-done
-```

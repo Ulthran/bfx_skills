@@ -1,0 +1,262 @@
+# =============================================================================
+# BFX Skills — Tool Citation Database
+# =============================================================================
+# Used by cite-bfx to generate citation sheets for completed projects.
+# Format: bibtex key, APA citation string, DOI, tool URL, recommended note.
+# Add entries when new tools are incorporated into the library.
+
+fastp:
+  key: chen2018fastp
+  tool: fastp
+  version_field: true
+  short: "fastp (Chen et al., 2018)"
+  apa: >
+    Chen, S., Zhou, Y., Chen, Y., & Gu, J. (2018). fastp: an ultra-fast
+    all-in-one FASTQ preprocessor. Bioinformatics, 34(17), i884–i890.
+  doi: 10.1093/bioinformatics/bty560
+  url: https://github.com/OpenGene/fastp
+  note: "Cite for any QC/adapter-trimming step using fastp."
+  bibtex: |
+    @article{chen2018fastp,
+      title={fastp: an ultra-fast all-in-one FASTQ preprocessor},
+      author={Chen, Shifu and Zhou, Yanqing and Chen, Yaru and Gu, Jia},
+      journal={Bioinformatics},
+      volume={34},
+      number={17},
+      pages={i884--i890},
+      year={2018},
+      publisher={Oxford University Press},
+      doi={10.1093/bioinformatics/bty560}
+    }
+
+bwa_mem2:
+  key: vasimuddin2019bwamem2
+  tool: bwa-mem2
+  version_field: true
+  short: "BWA-MEM2 (Vasimuddin et al., 2019)"
+  apa: >
+    Vasimuddin, M., Misra, S., Li, H., & Aluru, S. (2019). Efficient
+    Architecture-Aware Acceleration of BWA-MEM for Multicore Systems.
+    IEEE Parallel & Distributed Processing Symposium (IPDPS).
+  doi: 10.1109/IPDPS.2019.00041
+  url: https://github.com/bwa-mem2/bwa-mem2
+  note: "Cite for host decontamination or any read mapping step using bwa-mem2."
+  bibtex: |
+    @inproceedings{vasimuddin2019bwamem2,
+      title={Efficient Architecture-Aware Acceleration of {BWA-MEM} for Multicore Systems},
+      author={Vasimuddin, Md and Misra, Sanchit and Li, Heng and Aluru, Srinivas},
+      booktitle={IEEE International Parallel and Distributed Processing Symposium (IPDPS)},
+      year={2019},
+      doi={10.1109/IPDPS.2019.00041}
+    }
+
+samtools:
+  key: danecek2021samtools
+  tool: samtools
+  version_field: true
+  short: "SAMtools (Danecek et al., 2021)"
+  apa: >
+    Danecek, P., Bonfield, J. K., Liddle, J., Marshall, J., Ohan, V.,
+    Pollard, M. O., ... & Li, H. (2021). Twelve years of SAMtools and BCFtools.
+    GigaScience, 10(2), giab008.
+  doi: 10.1093/gigascience/giab008
+  url: https://github.com/samtools/samtools
+  note: "Cite whenever SAMtools is used (decontam pipeline, alignment processing)."
+  bibtex: |
+    @article{danecek2021samtools,
+      title={Twelve years of {SAMtools} and {BCFtools}},
+      author={Danecek, Petr and Bonfield, James K and Liddle, Jennifer and
+              Marshall, John and Ohan, Vince and Pollard, Martin O and
+              Whitwham, Andrew and Keane, Thomas and McCarthy, Shane A and
+              Davies, Robert M and Li, Heng},
+      journal={GigaScience},
+      volume={10},
+      number={2},
+      pages={giab008},
+      year={2021},
+      publisher={Oxford University Press},
+      doi={10.1093/gigascience/giab008}
+    }
+
+kraken2:
+  key: wood2019kraken2
+  tool: kraken2
+  version_field: true
+  short: "Kraken2 (Wood et al., 2019)"
+  apa: >
+    Wood, D. E., Lu, J., & Langmead, B. (2019). Improved metagenomic analysis
+    with Kraken 2. Genome Biology, 20(1), 257.
+  doi: 10.1186/s13059-019-1891-0
+  url: https://github.com/DerrickWood/kraken2
+  note: "Cite for taxonomic classification. Also cite Bracken if abundance estimation was used."
+  bibtex: |
+    @article{wood2019kraken2,
+      title={Improved metagenomic analysis with {Kraken} 2},
+      author={Wood, Derrick E and Lu, Jennifer and Langmead, Ben},
+      journal={Genome Biology},
+      volume={20},
+      number={1},
+      pages={257},
+      year={2019},
+      publisher={Springer},
+      doi={10.1186/s13059-019-1891-0}
+    }
+
+bracken:
+  key: lu2017bracken
+  tool: bracken
+  version_field: true
+  short: "Bracken (Lu et al., 2017)"
+  apa: >
+    Lu, J., Breitwieser, F. P., Thielen, P., & Salzberg, S. L. (2017).
+    Bracken: estimating species abundance in metagenomics data.
+    PeerJ Computer Science, 3, e104.
+  doi: 10.7717/peerj-cs.104
+  url: https://github.com/jenniferlu717/Bracken
+  note: "Cite alongside Kraken2 when Bracken abundance re-estimation is used."
+  bibtex: |
+    @article{lu2017bracken,
+      title={{Bracken}: estimating species abundance in metagenomics data},
+      author={Lu, Jennifer and Breitwieser, Florian P and Thielen, Peter and Salzberg, Steven L},
+      journal={PeerJ Computer Science},
+      volume={3},
+      pages={e104},
+      year={2017},
+      publisher={PeerJ Inc.},
+      doi={10.7717/peerj-cs.104}
+    }
+
+humann3:
+  key: beghini2021humann3
+  tool: humann3
+  version_field: true
+  short: "HUMAnN 3 (Beghini et al., 2021)"
+  apa: >
+    Beghini, F., McIver, L. J., Blanco-Miguez, A., Dubois, L., Asnicar, F.,
+    Maharjan, S., ... & Segata, N. (2021). Integrating taxonomic, functional,
+    and strain-level profiling of diverse microbial communities with bioBakery 3.
+    eLife, 10, e65088.
+  doi: 10.7554/eLife.65088
+  url: https://github.com/biobakery/humann
+  note: "Cite for functional profiling. This covers the full bioBakery 3 suite."
+  bibtex: |
+    @article{beghini2021humann3,
+      title={Integrating taxonomic, functional, and strain-level profiling of
+             diverse microbial communities with {bioBakery} 3},
+      author={Beghini, Francesco and McIver, Lauren J and Blanco-Miguez, Aitor and
+              Dubois, Leonard and Asnicar, Francesco and Maharjan, Sagun and
+              Mailyan, Ana and Manghi, Paolo and Scholz, Matthias and Thomas, Andrew M
+              and others},
+      journal={eLife},
+      volume={10},
+      pages={e65088},
+      year={2021},
+      publisher={eLife Sciences Publications Ltd},
+      doi={10.7554/eLife.65088}
+    }
+
+megahit:
+  key: li2015megahit
+  tool: megahit
+  version_field: true
+  short: "MEGAHIT (Li et al., 2015)"
+  apa: >
+    Li, D., Liu, C. M., Luo, R., Sadakane, K., & Lam, T. W. (2015).
+    MEGAHIT: An ultra-fast single-node solution for large and complex
+    metagenomics assembly via succinct de Bruijn graph.
+    Bioinformatics, 31(10), 1674–1676.
+  doi: 10.1093/bioinformatics/btv033
+  url: https://github.com/voutcn/megahit
+  note: "Cite for metagenomic assembly."
+  bibtex: |
+    @article{li2015megahit,
+      title={{MEGAHIT}: An ultra-fast single-node solution for large and complex
+             metagenomics assembly via succinct de {Bruijn} graph},
+      author={Li, Dinghua and Liu, Chi-Man and Luo, Ruibang and Sadakane, Kunihiko and Lam, Tak-Wah},
+      journal={Bioinformatics},
+      volume={31},
+      number={10},
+      pages={1674--1676},
+      year={2015},
+      publisher={Oxford University Press},
+      doi={10.1093/bioinformatics/btv033}
+    }
+
+metabat2:
+  key: kang2019metabat2
+  tool: metabat2
+  version_field: true
+  short: "MetaBAT 2 (Kang et al., 2019)"
+  apa: >
+    Kang, D. D., Li, F., Kirton, E., Thomas, A., Egan, R., An, H., &
+    Wang, Z. (2019). MetaBAT 2: an adaptive binning algorithm for robust
+    and efficient genome reconstruction from metagenome assemblies.
+    PeerJ, 7, e7359.
+  doi: 10.7717/peerj.7359
+  url: https://bitbucket.org/berkeleylab/metabat
+  note: "Cite for metagenome-assembled genome (MAG) binning."
+  bibtex: |
+    @article{kang2019metabat2,
+      title={{MetaBAT} 2: an adaptive binning algorithm for robust and efficient
+             genome reconstruction from metagenome assemblies},
+      author={Kang, Dongwan D and Li, Feng and Kirton, Ewen and Thomas, Ashleigh and
+              Egan, Rob and An, Hong and Wang, Zhong},
+      journal={PeerJ},
+      volume={7},
+      pages={e7359},
+      year={2019},
+      publisher={PeerJ Inc.},
+      doi={10.7717/peerj.7359}
+    }
+
+checkm2:
+  key: chklovski2023checkm2
+  tool: checkm2
+  version_field: true
+  short: "CheckM2 (Chklovski et al., 2023)"
+  apa: >
+    Chklovski, A., Parks, D. H., Woodcroft, B. J., & Tyson, G. W. (2023).
+    CheckM2: a rapid, scalable and accurate tool for assessing microbial
+    genome quality using machine learning. Nature Methods, 20, 1203–1212.
+  doi: 10.1038/s41592-023-01940-w
+  url: https://github.com/chklovski/CheckM2
+  note: "Cite for MAG quality assessment."
+  bibtex: |
+    @article{chklovski2023checkm2,
+      title={{CheckM2}: a rapid, scalable and accurate tool for assessing
+             microbial genome quality using machine learning},
+      author={Chklovski, Alex and Parks, Donovan H and Woodcroft, Ben J and Tyson, Gene W},
+      journal={Nature Methods},
+      volume={20},
+      pages={1203--1212},
+      year={2023},
+      publisher={Nature Publishing Group},
+      doi={10.1038/s41592-023-01940-w}
+    }
+
+snakemake:
+  key: molder2021snakemake
+  tool: snakemake
+  version_field: true
+  short: "Snakemake (Mölder et al., 2021)"
+  apa: >
+    Mölder, F., Jablonski, K. P., Letcher, B., Hall, M. B., Tomkins-Tinch, C. H.,
+    Sochat, V., ... & Köster, J. (2021). Sustainable data analysis with Snakemake.
+    F1000Research, 10, 33.
+  doi: 10.12688/f1000research.29032.2
+  url: https://snakemake.readthedocs.io
+  note: "Always cite Snakemake when any bfx-skills workflow is used."
+  bibtex: |
+    @article{molder2021snakemake,
+      title={Sustainable data analysis with {Snakemake}},
+      author={M{\"o}lder, Felix and Jablonski, Kim Philipp and Letcher, Brice and
+              Hall, Michael B and Tomkins-Tinch, Christopher H and Sochat, Vanessa and
+              Forster, Jan and Lee, Soohyun and Twardziok, Sven O and Kanitz, Alexander
+              and others},
+      journal={F1000Research},
+      volume={10},
+      pages={33},
+      year={2021},
+      publisher={F1000 Research Limited},
+      doi={10.12688/f1000research.29032.2}
+    }
