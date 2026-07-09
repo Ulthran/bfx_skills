@@ -1,9 +1,0 @@
-# Snakemake local execution profile
-# Used for both dry-runs and local execution
-cores: 8
-use-conda: true
-conda-frontend: mamba
-latency-wait: 30
-printshellcmds: true
-rerun-incomplete: true
-keep-going: false
